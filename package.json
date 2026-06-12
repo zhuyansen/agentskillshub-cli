@@ -1,0 +1,36 @@
+{
+  "name": "@agentskillshub/cli",
+  "version": "0.1.0",
+  "description": "Search, audit, and install open-source AI agent skills & MCP servers from the terminal — security-graded, quality-scored.",
+  "type": "module",
+  "bin": {
+    "ash": "bin/ash.mjs"
+  },
+  "files": [
+    "bin/ash.mjs",
+    "SKILL.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "Jason Zhu (AgentSkillsHub)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agentskillshub/cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/agentskillshub/cli/issues"
+  },
+  "keywords": [
+    "mcp",
+    "ai-agent",
+    "claude",
+    "skills",
+    "security-audit",
+    "cli"
+  ],
+  "homepage": "https://agentskillshub.top",
+  "license": "MIT"
+}
