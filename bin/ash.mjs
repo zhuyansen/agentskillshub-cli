@@ -247,7 +247,7 @@ function runAudit(index, args) {
     return console.log(JSON.stringify({ ...expand(row), in_catalog: true, verdict: VERDICT[row.g] || VERDICT.unknown, tier_note: "Basic (free). 5-dimension deep audit + any GitHub URL → Pro." }, null, 2));
   }
   console.log(`\n${bold(cyan(row.f))}  ${yellow(starStr(row.s))}${row.o ? green("  ✓ official") : ""}`);
-  console.log(`Security: ${gradeBadge(row.g)}     Quality: ${row.q}/100`);
+  console.log(`Security: ${gradeBadge(row.g)}     Quality: ${Math.round(row.q ?? 0)}/100`);
   if (row.d) console.log(dim(`\n  ${row.d}`));
   console.log(`\n${bold("Basic verdict")} ${dim("(free tier)")}`);
   console.log(`  ${VERDICT[row.g] || VERDICT.unknown}`);
