@@ -42,6 +42,9 @@ const GRADE = {
   unknown: { label: "UNAUDITED", mark: "⚪" },
 };
 
+// CJK detection — Chinese queries have no word boundaries, so we bigram them.
+const CJK = /[一-鿿]/;
+
 // ─── tiny ANSI (auto-off when not a TTY / NO_COLOR) ──────────────────────────
 const tty = process.stdout.isTTY && !process.env.NO_COLOR;
 const c = (code, s) => (tty ? `\x1b[${code}m${s}\x1b[0m` : s);
@@ -143,13 +146,26 @@ function scoreRow(row, tokens) {
   const full = (row.f || "").toLowerCase();
   const desc = (row.d || "").toLowerCase();
   const tags = (row.t || []).join(" ").toLowerCase();
+  // Bilingual scenario keywords (field `w`) — lets Chinese queries match
+  // English-only repos via our curated scenario titles, and ranks
+  // scenario-relevant skills higher. Empty/undefined on older indexes.
+  const scen = (row.w || "").toLowerCase();
   let score = 0;
   for (const tok of tokens) {
     if (name === tok) score += 50;
     else if (name.includes(tok)) score += 20;
     if (full.includes(tok)) score += 8;
+    if (scen.includes(tok)) score += 12;
     if (tags.includes(tok)) score += 10;
     if (desc.includes(tok)) score += 5;
+    // CJK compound queries arrive as one space-less token ("抓取网站").
+    // Fall back to 2-char windows so a keyword like "抓取" still matches.
+    if (CJK.test(tok) && tok.length >= 3) {
+      for (let i = 0; i + 2 <= tok.length; i++) {
+        const bg = tok.slice(i, i + 2);
+        if (scen.includes(bg)) { score += 9; break; }
+      }
+    }
   }
   if (score === 0) return -1; // matched nothing
   return score + (row.q || 0) / 20 + Math.min(row.s, 50000) / 25000; // quality + popularity tiebreak
