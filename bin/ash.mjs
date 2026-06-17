@@ -335,20 +335,20 @@ function fail(msg) {
   process.exitCode = 1;
 }
 
-const HELP = `${bold("ash")} — AgentSkillsHub CLI  ${dim("· search · audit · install · ~20K skills")}
+const RUN = "npx @agentskillshub/cli";
+const HELP = `${bold("AgentSkillsHub CLI")}  ${dim("· search · audit · install · ~20K skills")}
 
-${bold("Usage")}
-  ash search <query> [--category <c>] [--platform <p>] [--min-stars <n>] [--safe] [--limit <n>] [--json]
-  ash audit  <owner/repo> [--json]
-  ash install <owner/repo> [--json]
-  ash update                      force-refresh the cached index
-  ash --help
+${bold("Usage")}  ${dim("(globally installed? `ash <command>` also works)")}
+  ${RUN} search <query> [--category <c>] [--platform <p>] [--min-stars <n>] [--safe] [--limit <n>] [--json]
+  ${RUN} audit  <owner/repo> [--json]
+  ${RUN} install <owner/repo> [--json]
+  ${RUN} update                  ${dim("force-refresh the cached index")}
 
 ${bold("Examples")}
-  ash search "scrape a website" --safe
-  ash search postgres --category mcp-server --limit 5
-  ash audit modelcontextprotocol/servers
-  ash install owner/repo
+  ${RUN} search "scrape a website" --safe
+  ${RUN} search postgres --category mcp-server --limit 5
+  ${RUN} audit modelcontextprotocol/servers
+  ${RUN} install owner/repo
 
 ${dim("Index is a static CDN file, downloaded once and cached at")} ${CACHE_DIR}
 ${dim("Refreshes every 8h. Zero backend load.  Set NO_COLOR=1 to disable color.")}`;
