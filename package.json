@@ -1,6 +1,6 @@
 {
   "name": "@agentskillshub/cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Search, audit, and install open-source AI agent skills & MCP servers from the terminal — security-graded, quality-scored.",
   "type": "module",
   "bin": {

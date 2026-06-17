@@ -181,9 +181,22 @@ function applyFilters(skills, f) {
   });
 }
 
+/** Tokenize a query. Splits on whitespace AND at latin↔CJK boundaries, so a
+ *  glued mixed query like "ppt制作" becomes ["ppt", "制作"] (otherwise it's one
+ *  token that matches nothing). Pure-CJK compounds still rely on the bigram
+ *  fallback in scoreRow. */
+function tokenize(q) {
+  return q
+    .toLowerCase()
+    .replace(/([a-z0-9])([一-鿿])/g, "$1 $2")
+    .replace(/([一-鿿])([a-z0-9])/g, "$1 $2")
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
 function runSearch(index, args) {
   const f = parseFilters(args);
-  const tokens = f.query.toLowerCase().split(/\s+/).filter(Boolean);
+  const tokens = tokenize(f.query);
   const pool = applyFilters(index.skills, f);
   const ranked = pool
     .map((r) => ({ r, score: scoreRow(r, tokens) }))
