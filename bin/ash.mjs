@@ -45,6 +45,13 @@ const GRADE = {
 // CJK detection — Chinese queries have no word boundaries, so we bigram them.
 const CJK = /[一-鿿]/;
 
+// Generic terms that appear in ~half the catalog — they drown the distinctive
+// part of a query. Ignored during scoring unless the whole query is generic.
+const STOPWORDS = new Set([
+  "ai", "mcp", "mcps", "agent", "agents", "tool", "tools", "skill", "skills",
+  "server", "servers", "app", "apps", "工具", "服务器", "服务",
+]);
+
 // ─── tiny ANSI (auto-off when not a TTY / NO_COLOR) ──────────────────────────
 const tty = process.stdout.isTTY && !process.env.NO_COLOR;
 const c = (code, s) => (tty ? `\x1b[${code}m${s}\x1b[0m` : s);
@@ -150,8 +157,14 @@ function scoreRow(row, tokens) {
   // English-only repos via our curated scenario titles, and ranks
   // scenario-relevant skills higher. Empty/undefined on older indexes.
   const scen = (row.w || "").toLowerCase();
+  // When the query has a distinctive term, generic tokens (ai/mcp/agent/工具…)
+  // match half the catalog and drown it — "去 AI 味" would rank vercel/ai over
+  // the actual humanizer. Skip generic tokens for scoring UNLESS the whole query
+  // is generic (then they're all we have).
+  const hasContent = tokens.some((t) => !STOPWORDS.has(t));
   let score = 0;
   for (const tok of tokens) {
+    if (hasContent && STOPWORDS.has(tok)) continue;
     if (name === tok) score += 50;
     else if (name.includes(tok)) score += 20;
     if (full.includes(tok)) score += 8;
