@@ -17,22 +17,22 @@ The catalog is a static index downloaded once and cached locally (`~/.cache/agen
 
 ## How to use
 
-The CLI is `bin/ash.mjs` (Node ≥ 18, zero dependencies). Run it with `node`:
+Zero-dependency Node CLI (Node ≥ 18). Run it with `npx`:
 
 ```bash
 # Search (local fuzzy ranking over name/desc/tags; quality + popularity tiebreak)
-node bin/ash.mjs search "scrape a website" --safe --limit 5
-node bin/ash.mjs search postgres --category mcp-server
+npx @agentskillshub/cli search "scrape a website" --safe --limit 5
+npx @agentskillshub/cli search postgres --category mcp-server
 #   filters: --category <c> --platform <p> --min-stars <n> --safe --limit <n>
 
 # Audit — free basic trust check (security grade + plain-English verdict)
-node bin/ash.mjs audit owner/repo
+npx @agentskillshub/cli audit owner/repo
 
 # Install — install commands + a "check before you install" safety line
-node bin/ash.mjs install owner/repo
+npx @agentskillshub/cli install owner/repo
 
 # Force-refresh the cached index
-node bin/ash.mjs update
+npx @agentskillshub/cli update
 ```
 
 Add `--json` to `search`, `audit`, or `install` for structured output to parse programmatically.

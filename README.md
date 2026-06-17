@@ -1,4 +1,4 @@
-# `ash` — AgentSkillsHub CLI
+# AgentSkillsHub CLI
 
 Search, audit, and install open-source AI agent skills & MCP servers from your terminal. Every result is **security-graded** and **quality-scored** by [AgentSkillsHub](https://agentskillshub.top).
 
@@ -8,7 +8,7 @@ npx @agentskillshub/cli search "scrape a website" --safe
 
 ## Why
 
-Discovering a skill is easy. Knowing whether it's safe to run against your credentials is not. `ash` puts the trust signal *before* the install:
+Discovering a skill is easy. Knowing whether it's safe to run against your credentials is not. It puts the trust signal *before* the install:
 
 ```
 $ npx @agentskillshub/cli search postgres --category mcp-server --limit 2
@@ -24,9 +24,7 @@ sgaunet/postgresql-mcp  5★  ⚪ UNAUDITED  ~23.0k tok
 
 ## Commands
 
-Run via `npx @agentskillshub/cli <command>`. (A global `npm i -g` also exposes an
-`ash` shorthand — but `ash` is the Almquist shell on Alpine/BusyBox, so the `npx`
-form is the recommended, collision-free way to invoke it.)
+Run via `npx @agentskillshub/cli <command>`:
 
 | | |
 |---|---|
