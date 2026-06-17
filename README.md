@@ -11,7 +11,7 @@ npx @agentskillshub/cli search "scrape a website" --safe
 Discovering a skill is easy. Knowing whether it's safe to run against your credentials is not. `ash` puts the trust signal *before* the install:
 
 ```
-$ ash search postgres --category mcp-server --limit 2
+$ npx @agentskillshub/cli search postgres --category mcp-server --limit 2
 
 call518/MCP-PostgreSQL-Ops  150★  🟢 SAFE
   Give AI assistants full PostgreSQL DBA superpowers — 30+ tools…
@@ -24,12 +24,16 @@ sgaunet/postgresql-mcp  5★  ⚪ UNAUDITED  ~23.0k tok
 
 ## Commands
 
+Run via `npx @agentskillshub/cli <command>`. (A global `npm i -g` also exposes an
+`ash` shorthand — but `ash` is the Almquist shell on Alpine/BusyBox, so the `npx`
+form is the recommended, collision-free way to invoke it.)
+
 | | |
 |---|---|
-| `ash search <query> [filters]` | Find skills. Filters: `--category` `--platform` `--min-stars` `--safe` `--limit` |
-| `ash audit <owner/repo>` | Free basic trust check: security grade + plain-English verdict |
-| `ash install <owner/repo>` | Install commands + "check before you install" safety line |
-| `ash update` | Force-refresh the cached index |
+| `search <query> [filters]` | Find skills. Filters: `--category` `--platform` `--min-stars` `--safe` `--limit` |
+| `audit <owner/repo>` | Free basic trust check: security grade + plain-English verdict |
+| `install <owner/repo>` | Install commands + "check before you install" safety line |
+| `update` | Force-refresh the cached index |
 
 Add `--json` to any of `search` / `audit` / `install` for machine-readable output.
 
