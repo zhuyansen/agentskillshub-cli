@@ -26,9 +26,10 @@ import { join } from "node:path";
 const BASE = process.env.AGENTSKILLSHUB_BASE || "https://agentskillshub.top";
 const META_URL = `${BASE}/search-index-meta.json`;
 const INDEX_URL = `${BASE}/search-index.json.gz`;
-// ?ref=cli lets web analytics attribute clickthroughs that originate in the CLI
-// (anonymous, no in-CLI telemetry). Query comes before any #audit fragment.
-const HUB_SKILL = (full) => `${BASE}/skill/${full}/?ref=cli`;
+// UTM params let GA4 (Traffic acquisition) and Plausible (UTM Sources) auto-
+// attribute CLI-originated clickthroughs with zero report-building — anonymous,
+// no in-CLI telemetry. Query comes before any #audit fragment.
+const HUB_SKILL = (full) => `${BASE}/skill/${full}/?utm_source=cli&utm_medium=cli`;
 
 const CACHE_DIR = join(process.env.AGENTSKILLSHUB_CACHE || join(homedir(), ".cache", "agentskillshub"));
 const CACHE_INDEX = join(CACHE_DIR, "search-index.json");
