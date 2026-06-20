@@ -37,7 +37,7 @@ Add `--json` to any of `search` / `audit` / `install` for machine-readable outpu
 
 ## How it works
 
-The catalog (~20K quality skills, stars ≥ 5) is a single static file (~1.7MB gzipped) served from the CDN. `ash` downloads it once, caches it at `~/.cache/agentskillshub/`, and refreshes every ~8h. **All searching is local** — fast, works offline, and puts zero load on the backend.
+The catalog (~20K quality skills, stars ≥ 5) is a single static file (~1.7MB gzipped) served from the CDN. The CLI downloads it once, caches it at `~/.cache/agentskillshub/`, and checks for a newer index with a cheap 77B probe (re-downloading the full file only when it actually changed, so a freshly-deployed index reaches you within minutes). **All searching is local** — fast, works offline, and puts zero load on the backend.
 
 ## Security grades
 

@@ -7,7 +7,7 @@ description: Use when the user wants to find, evaluate, audit, or install an ope
 
 Discover → audit → install open-source AI agent skills and MCP servers without leaving the terminal. Backed by [AgentSkillsHub](https://agentskillshub.top): ~106K indexed skills, of which ~20K (stars ≥ 5) are in the searchable catalog, each carrying a **quality score** and a **security grade**.
 
-The catalog is a static index downloaded once and cached locally (`~/.cache/agentskillshub/`, refreshed every ~8h). Every search after the first is **instant, offline, and puts zero load on the Hub backend**.
+The catalog is a static index downloaded once and cached locally (`~/.cache/agentskillshub/`), with a cheap 77B freshness probe that re-downloads only when the index actually changes. Every search after the first is **instant, offline, and puts zero load on the Hub backend**.
 
 ## When to use
 

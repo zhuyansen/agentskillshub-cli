@@ -26,12 +26,18 @@ import { join } from "node:path";
 const BASE = process.env.AGENTSKILLSHUB_BASE || "https://agentskillshub.top";
 const META_URL = `${BASE}/search-index-meta.json`;
 const INDEX_URL = `${BASE}/search-index.json.gz`;
-const HUB_SKILL = (full) => `${BASE}/skill/${full}/`;
+// ?ref=cli lets web analytics attribute clickthroughs that originate in the CLI
+// (anonymous, no in-CLI telemetry). Query comes before any #audit fragment.
+const HUB_SKILL = (full) => `${BASE}/skill/${full}/?ref=cli`;
 
 const CACHE_DIR = join(process.env.AGENTSKILLSHUB_CACHE || join(homedir(), ".cache", "agentskillshub"));
 const CACHE_INDEX = join(CACHE_DIR, "search-index.json");
 const CACHE_META = join(CACHE_DIR, "search-index-meta.json");
-const TTL_MS = 8 * 60 * 60 * 1000; // refresh at most every 8h (matches sync cadence)
+// Within this window we serve the cached index without even probing the CDN.
+// Kept short so a freshly-deployed index reaches users within minutes — the
+// probe is a cheap 77B meta fetch; the 1.7MB index re-downloads only when
+// generated_at actually changed.
+const TTL_MS = 15 * 60 * 1000; // 15 min
 
 // security_grade → display
 const GRADE = {
