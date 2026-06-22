@@ -45,6 +45,8 @@ The catalog (~20K quality skills, stars ≥ 5) is a single static file (~1.7MB g
 
 ⚪ **UNAUDITED** is not "probably fine" — it means *no one has audited it*. Check the code, the credentials it asks for, and who maintains it before you trust it.
 
+We scanned the whole catalog and wrote up what we found — only 17.7% of skills are popular enough to be graded, 1 in 32 graded ones is unsafe, and the risk lives in the long tail: **[We security-graded 117,854 AI agent skills](https://agentskillshub.top/blog/securing-117k-ai-skills/)**.
+
 ## Free vs. Pro
 
 - **Free**: search · basic audit · install commands, for any catalogued skill.
