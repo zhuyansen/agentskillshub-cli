@@ -49,9 +49,6 @@ const GRADE = {
   unknown: { label: "UNAUDITED", mark: "⚪" },
 };
 
-// CJK detection — Chinese queries have no word boundaries, so we bigram them.
-const CJK = /[一-鿿]/;
-
 // Generic terms that appear in ~half the catalog — they drown the distinctive
 // part of a query. Ignored during scoring unless the whole query is generic.
 const STOPWORDS = new Set([
@@ -153,6 +150,21 @@ function parseFilters(args) {
   return f;
 }
 
+/** Bilingual scenario keywords as DISCRETE units — lets Chinese queries match
+ *  English-only repos via our curated scenario titles. Prefers the structured
+ *  array `wk` (new index); falls back to splitting the legacy space-joined blob
+ *  `w` (old index) so one CLI works on both formats during the cutover. */
+function keywordsOf(row) {
+  const raw = Array.isArray(row.wk)
+    ? row.wk
+    : row.w
+      ? String(row.w).split(/\s+/)
+      : [];
+  // Dedup — the legacy blob repeats keywords ("浏览器自动化" ×3), which would
+  // otherwise inflate the distinct-keyword count and over-score one concept.
+  return [...new Set(raw.map((k) => k.toLowerCase()).filter(Boolean))];
+}
+
 /** Score one skill row against the tokenized query. Higher = better match. */
 function scoreRow(row, tokens) {
   if (!tokens.length) return row.q || 0; // no query → quality-ranked browse
@@ -160,10 +172,7 @@ function scoreRow(row, tokens) {
   const full = (row.f || "").toLowerCase();
   const desc = (row.d || "").toLowerCase();
   const tags = (row.t || []).join(" ").toLowerCase();
-  // Bilingual scenario keywords (field `w`) — lets Chinese queries match
-  // English-only repos via our curated scenario titles, and ranks
-  // scenario-relevant skills higher. Empty/undefined on older indexes.
-  const scen = (row.w || "").toLowerCase();
+  const kws = keywordsOf(row);
   // When the query has a distinctive term, generic tokens (ai/mcp/agent/工具…)
   // match half the catalog and drown it — "去 AI 味" would rank vercel/ai over
   // the actual humanizer. Skip generic tokens for scoring UNLESS the whole query
@@ -175,17 +184,19 @@ function scoreRow(row, tokens) {
     if (name === tok) score += 50;
     else if (name.includes(tok)) score += 20;
     if (full.includes(tok)) score += 8;
-    if (scen.includes(tok)) score += 12;
     if (tags.includes(tok)) score += 10;
     if (desc.includes(tok)) score += 5;
-    // CJK compound queries arrive as one space-less token ("抓取网站").
-    // Fall back to 2-char windows so a keyword like "抓取" still matches.
-    if (CJK.test(tok) && tok.length >= 3) {
-      for (let i = 0; i + 2 <= tok.length; i++) {
-        const bg = tok.slice(i, i + 2);
-        if (scen.includes(bg)) { score += 9; break; }
-      }
+    // Scenario-keyword match — compare the WHOLE token against WHOLE keywords
+    // (one fully contains the other). Word-aware, so a compound CJK query like
+    // "网页数据爬取" matches the keyword "爬取" but no longer bleeds into the
+    // generic "数据库" via an internal "数据" bigram. Gradation by distinct
+    // keywords hit restores relevance over the star tiebreak.
+    let kwHits = 0;
+    for (const kw of kws) {
+      if (kw.length < 2) continue;
+      if (tok.includes(kw) || kw.includes(tok)) kwHits++;
     }
+    if (kwHits) score += 10 + Math.min(kwHits - 1, 3) * 5; // 1→10 … 4+→25
   }
   if (score === 0) return -1; // matched nothing
   return score + (row.q || 0) / 20 + Math.min(row.s, 50000) / 25000; // quality + popularity tiebreak
@@ -203,8 +214,8 @@ function applyFilters(skills, f) {
 
 /** Tokenize a query. Splits on whitespace AND at latin↔CJK boundaries, so a
  *  glued mixed query like "ppt制作" becomes ["ppt", "制作"] (otherwise it's one
- *  token that matches nothing). Pure-CJK compounds still rely on the bigram
- *  fallback in scoreRow. */
+ *  token that matches nothing). A pure-CJK compound stays one token and is
+ *  matched in scoreRow by whole-keyword containment against each scenario kw. */
 function tokenize(q) {
   return q
     .toLowerCase()
