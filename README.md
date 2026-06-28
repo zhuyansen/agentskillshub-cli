@@ -1,6 +1,8 @@
 # AgentSkillsHub CLI
 
-Search, audit, and install open-source AI agent skills & MCP servers from your terminal. Every result is **security-graded** and **quality-scored** by [AgentSkillsHub](https://agentskillshub.top).
+**[🌐 Website](https://agentskillshub.top)** · **[🔎 Browse Skills](https://agentskillshub.top)** · **[🛡️ Security Report](https://agentskillshub.top/blog/securing-117k-ai-skills/)** · **[🏢 Enterprise](https://agentskillshub.top/enterprise/)**
+
+Search, audit, and install open-source AI agent skills & MCP servers from your terminal. Every result is **security-graded** and **quality-scored** by [AgentSkillsHub](https://agentskillshub.top) — a directory of 117K+ skills with a trust signal before you install.
 
 ```bash
 npx @agentskillshub/cli search "scrape a website" --safe
