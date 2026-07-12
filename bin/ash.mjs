@@ -143,6 +143,8 @@ function parseFilters(args) {
     else if (a === "--min-stars") f.minStars = parseInt(args[++i], 10) || 0;
     else if (a === "--category") f.category = (args[++i] || "").toLowerCase();
     else if (a === "--platform") f.platform = (args[++i] || "").toLowerCase();
+    else if (a === "--pro") f.pro = true;
+    else if (a === "--free" || a === "--no-pro") f.free = true;
     else if (a.startsWith("--")) {} // ignore unknown flags
     else terms.push(a);
   }
@@ -225,8 +227,22 @@ function tokenize(q) {
     .filter(Boolean);
 }
 
-function runSearch(index, args) {
+async function runSearch(index, args) {
   const f = parseFilters(args);
+  const wantPro = f.pro || (!!PRO_KEY && !f.free);
+  if (wantPro) {
+    if (!PRO_KEY) return fail("--pro needs a member key. Set ASH_PRO_KEY (get one at " + BASE + "/pro/).");
+    let rows;
+    try { rows = await proSearch(f); }
+    catch (e) { return fail(e.message); }
+    const mapped = rows.map(proRowToDisplay);
+    if (f.json) { console.log(JSON.stringify(mapped.map(expand), null, 2)); return; }
+    if (!mapped.length) { console.log(dim(`No skills matched "${f.query}" in README-depth search.`)); return; }
+    console.log(bold(`\n${mapped.length} result${mapped.length > 1 ? "s" : ""}`) + dim(`  ·  Pro README-depth search\n`));
+    mapped.forEach(printResult);
+    console.log(dim(`\nNext:  ash audit <owner/repo>   ·   ash install <owner/repo>\n`));
+    return;
+  }
   const tokens = tokenize(f.query);
   const pool = applyFilters(index.skills, f);
   const ranked = pool
@@ -272,6 +288,45 @@ function printResult(r) {
   if (r.d) console.log(`  ${r.d}`);
   const meta = [r.c, ...(r.p || [])].filter(Boolean).join(" · ");
   console.log(dim(`  ${meta}   ${HUB_SKILL(r.f)}`) + "\n");
+}
+
+// ─── Pro deep search (member key → live RPC, README-depth) ───────────────────
+// Free search hits the static CDN index (name/desc/tag). Pro members set
+// ASH_PRO_KEY to unlock full-README search via the pro_search RPC. Anon key is
+// public (same as the website); the member key is the gate, enforced in Postgres.
+const SUPA_URL = "https://vknzzecmzsfmohglpfgm.supabase.co";
+const SUPA_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrbnp6ZWNtenNmbW9oZ2xwZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MDQ3MzIsImV4cCI6MjA4ODM4MDczMn0.zFAGZH-lDcL-GwyMkR-9sSV8pJToVzomsJ_fuXZIoDo";
+const PRO_KEY = process.env.ASH_PRO_KEY || "";
+
+async function proSearch(f) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/rpc/pro_search`, {
+    method: "POST",
+    headers: { "content-type": "application/json", apikey: SUPA_ANON, authorization: `Bearer ${SUPA_ANON}` },
+    body: JSON.stringify({
+      p_key: PRO_KEY,
+      p_query: f.query || null,
+      p_category: f.category || null,
+      p_min_security: f.safe ? "safe" : null,
+      p_limit: Math.min(f.limit && f.limit > 20 ? f.limit : 200, 500),
+    }),
+  });
+  if (res.status === 404) throw new Error("Pro search endpoint not found (server not provisioned).");
+  if (!res.ok) {
+    const body = await res.text();
+    if (body.includes("invalid_or_expired_key") || body.includes('"42501"'))
+      throw new Error("ASH_PRO_KEY invalid or expired — renew at " + BASE + "/pro/");
+    throw new Error(`Pro search failed (HTTP ${res.status}).`);
+  }
+  return res.json(); // SETOF skills — full DB rows
+}
+
+// Map a DB row (pro_search) to the CLI's compact display shape (`r.*`).
+function proRowToDisplay(row) {
+  return {
+    f: row.repo_full_name, n: row.repo_name, a: row.author_name, s: row.stars,
+    d: row.description, c: row.category, p: JSON.parse(row.platforms || "[]"),
+    t: [], q: row.quality_score, g: row.security_grade, k: row.estimated_tokens, o: row.is_official,
+  };
 }
 
 function expand(r) {
@@ -357,7 +412,7 @@ const RUN = "npx @agentskillshub/cli";
 const HELP = `${bold("AgentSkillsHub CLI")}  ${dim("· search · audit · install · ~20K skills")}
 
 ${bold("Usage")}  ${dim("(globally installed? `ash <command>` also works)")}
-  ${RUN} search <query> [--category <c>] [--platform <p>] [--min-stars <n>] [--safe] [--limit <n>] [--json]
+  ${RUN} search <query> [--category <c>] [--platform <p>] [--min-stars <n>] [--safe] [--limit <n>] [--json] [--pro]
   ${RUN} audit  <owner/repo> [--json]
   ${RUN} install <owner/repo> [--json]
   ${RUN} update                  ${dim("force-refresh the cached index")}
@@ -369,7 +424,8 @@ ${bold("Examples")}
   ${RUN} install owner/repo
 
 ${dim("Index is a static CDN file, downloaded once and cached at")} ${CACHE_DIR}
-${dim("Refreshes every 8h. Zero backend load.  Set NO_COLOR=1 to disable color.")}`;
+${dim("Refreshes every 8h. Zero backend load.  Set NO_COLOR=1 to disable color.")}
+${dim("Pro: set ASH_PRO_KEY to search full README text (200 results) — get a key at " + BASE + "/pro/")}`;
 
 async function main() {
   const [cmd, ...rest] = process.argv.slice(2);
@@ -380,12 +436,12 @@ async function main() {
     return console.log(green("✓ index refreshed."));
   }
   const index = await loadIndex();
-  if (cmd === "search" || cmd === "s") return runSearch(index, rest);
+  if (cmd === "search" || cmd === "s") return await runSearch(index, rest);
   if (cmd === "audit" || cmd === "a") return runAudit(index, rest);
   if (cmd === "install" || cmd === "i") return runInstall(index, rest);
 
   // bare `ash <query>` → treat as search
-  runSearch(index, [cmd, ...rest]);
+  await runSearch(index, [cmd, ...rest]);
 }
 
 main().catch((err) => fail(err.message || String(err)));
