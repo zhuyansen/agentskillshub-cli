@@ -52,6 +52,7 @@ We scanned the whole catalog and wrote up what we found — only 17.7% of skills
 ## Free vs. Pro
 
 - **Free**: search · basic audit · install commands, for any catalogued skill.
+- **Pro members**: set `ASH_PRO_KEY` and `search` matches the full README text (up to 200 results). Each search has a time limit; when it stops there, the CLI says the list may be incomplete and how to narrow it, and `--json` rows carry `incomplete_results: true`.
 - **Pro / Enterprise**: 5-dimension deep audit, any GitHub URL (incl. <5★ / private), CI/batch auditing, compliance evidence → <https://agentskillshub.top/enterprise/>
 
 ## Env
@@ -60,6 +61,7 @@ We scanned the whole catalog and wrote up what we found — only 17.7% of skills
 |---|---|
 | `AGENTSKILLSHUB_BASE` | `https://agentskillshub.top` |
 | `AGENTSKILLSHUB_CACHE` | `~/.cache/agentskillshub` |
+| `ASH_PRO_KEY` | unset — Pro member key for README-depth search (get one at <https://agentskillshub.top/pro/>) |
 | `NO_COLOR` | unset (set to disable color) |
 
 MIT © AgentSkillsHub

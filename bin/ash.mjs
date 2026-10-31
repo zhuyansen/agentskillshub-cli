@@ -236,9 +236,17 @@ async function runSearch(index, args) {
     try { rows = await proSearch(f); }
     catch (e) { return fail(e.message); }
     const mapped = rows.map(proRowToDisplay);
-    if (f.json) { console.log(JSON.stringify(mapped.map(expand), null, 2)); return; }
+    // The search stopped at its time limit: only the most-starred matches it found.
+    const incomplete = rows.some((r) => r.incomplete_results === true);
+    if (f.json) {
+      console.log(JSON.stringify(mapped.map((r) => ({ ...expand(r), incomplete_results: incomplete })), null, 2));
+      return;
+    }
     if (!mapped.length) { console.log(dim(`No skills matched "${f.query}" in README-depth search.`)); return; }
     console.log(bold(`\n${mapped.length} result${mapped.length > 1 ? "s" : ""}`) + dim(`  ·  Pro README-depth search\n`));
+    if (incomplete)
+      console.log(yellow(`⚠ Results may be incomplete: the search hit its time limit, so only the ${mapped.length} most-starred matches it found are shown.`) +
+        dim(`\n  For the full list, ${narrowingAdvice(f)}.\n`));
     mapped.forEach(printResult);
     console.log(dim(`\nNext:  ash audit <owner/repo>   ·   ash install <owner/repo>\n`));
     return;
@@ -298,6 +306,17 @@ const SUPA_URL = "https://vknzzecmzsfmohglpfgm.supabase.co";
 const SUPA_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrbnp6ZWNtenNmbW9oZ2xwZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MDQ3MzIsImV4cCI6MjA4ODM4MDczMn0.zFAGZH-lDcL-GwyMkR-9sSV8pJToVzomsJ_fuXZIoDo";
 const PRO_KEY = process.env.ASH_PRO_KEY || "";
 
+// What makes a Pro search cheaper: a filter not yet set, or dropping the quotes
+// (a quoted phrase is checked row by row; the same words unquoted are not).
+function narrowingAdvice(f) {
+  const steps = [];
+  if (!f.category) steps.push("add --category <c>");
+  if (!f.safe) steps.push("add --safe");
+  if (f.query.includes('"')) steps.push("drop the quotes (the words then need not be adjacent)");
+  if (!steps.length) steps.push("use a more specific word");
+  return steps.length > 1 ? `${steps.slice(0, -1).join(", ")} or ${steps.at(-1)}` : steps[0];
+}
+
 async function proSearch(f) {
   const res = await fetch(`${SUPA_URL}/rest/v1/rpc/pro_search`, {
     method: "POST",
@@ -315,6 +334,10 @@ async function proSearch(f) {
     const body = await res.text();
     if (body.includes("invalid_or_expired_key") || body.includes('"42501"'))
       throw new Error("ASH_PRO_KEY invalid or expired — renew at " + BASE + "/pro/");
+    // The search hit its time limit before it found a single row (HTTP 422).
+    if (body.includes("search_incomplete") || body.includes('"PT422"'))
+      throw new Error("Pro search hit its time limit before it found any match, which doesn't mean there are none. " +
+        `To let it finish, ${narrowingAdvice(f)}.`);
     throw new Error(`Pro search failed (HTTP ${res.status}).`);
   }
   return res.json(); // SETOF skills — full DB rows
