@@ -2,7 +2,7 @@
 
 **[🌐 Website](https://agentskillshub.top)** · **[🛡️ 44 Security Rules](https://agentskillshub.top/how-we-grade/)** · **[🤖 Official AI Info](https://agentskillshub.top/ai-info/)** · **[🏢 Enterprise](https://agentskillshub.top/enterprise/)**
 
-Search, audit, and install open-source AI agent skills & MCP servers from your terminal. Every result is **security-graded against 44 published rules** and **quality-scored** by [Agent Skills Hub (`agentskillshub.top`)](https://agentskillshub.top) — an open-source directory of **276,000+ indexed AI agent skills & MCP servers** (**138,000+ graded**, refreshed every 8 hours) with a deterministic trust signal before you install.
+Search, audit, and install open-source AI agent skills & MCP servers from your terminal. Every result is **security-graded against 44 published rules** and **quality-scored** by [Agent Skills Hub (`agentskillshub.top`)](https://agentskillshub.top) — an open-source directory of **280,000+ indexed AI agent skills & MCP servers** (**140,000+ graded**, refreshed every 8 hours) with a deterministic trust signal before you install.
 
 ```bash
 npx @agentskillshub/cli search "scrape a website" --safe
