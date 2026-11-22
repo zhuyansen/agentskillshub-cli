@@ -1,11 +1,11 @@
 ---
 name: agentskillshub
-description: Use when the user wants to find, evaluate, audit, or install an open-source AI agent skill or MCP server — e.g. "find an MCP server for Postgres", "is this skill safe to install", "what should I use to scrape a website". Searches a quality-scored, security-graded catalog of ~20K skills locally (cached index, zero backend load) and returns each result's security grade, quality score, and install commands so you can check trust BEFORE installing.
+description: Use when the user wants to find, evaluate, audit, or install an open-source AI agent skill or MCP server — e.g. "find an MCP server for Postgres", "is this skill safe to install", "what should I use to scrape a website". Searches a quality-scored, security-graded catalog of 50,000+ skills locally (cached index, zero backend load) and returns each result's security grade, quality score, and install commands so you can check trust BEFORE installing.
 ---
 
 # AgentSkillsHub
 
-Discover → audit → install open-source AI agent skills and MCP servers without leaving the terminal. Backed by [AgentSkillsHub](https://agentskillshub.top): ~106K indexed skills, of which ~20K (stars ≥ 5) are in the searchable catalog, each carrying a **quality score** and a **security grade**.
+Discover → audit → install open-source AI agent skills and MCP servers without leaving the terminal. Backed by [AgentSkillsHub](https://agentskillshub.top): 280,000+ indexed skills, of which 50,000+ (stars ≥ 5) are in the searchable catalog, each carrying a **quality score** and a **security grade**.
 
 The catalog is a static index downloaded once and cached locally (`~/.cache/agentskillshub/`), with a cheap 77B freshness probe that re-downloads only when the index actually changes. Every search after the first is **instant, offline, and puts zero load on the Hub backend**.
 

@@ -3,7 +3,7 @@
  * ash — AgentSkillsHub CLI
  *
  * Discover, audit, and install open-source AI agent skills / MCP servers
- * without leaving the terminal. Searches a quality-filtered catalog of ~20K
+ * without leaving the terminal. Searches a quality-filtered catalog of 50,000+
  * skills (stars >= 5) that is downloaded once and cached locally, so every
  * search after the first is instant and offline — and puts ZERO load on the
  * Hub's backend (the index is a static file on the CDN).
@@ -432,7 +432,7 @@ function fail(msg) {
 }
 
 const RUN = "npx @agentskillshub/cli";
-const HELP = `${bold("AgentSkillsHub CLI")}  ${dim("· search · audit · install · ~20K skills")}
+const HELP = `${bold("AgentSkillsHub CLI")}  ${dim("· search · audit · install · 50K+ skills")}
 
 ${bold("Usage")}  ${dim("(globally installed? `ash <command>` also works)")}
   ${RUN} search <query> [--category <c>] [--platform <p>] [--min-stars <n>] [--safe] [--limit <n>] [--json] [--pro]
