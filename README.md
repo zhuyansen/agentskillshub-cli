@@ -2,7 +2,7 @@
 
 **[🌐 Website](https://agentskillshub.top)** · **[🛡️ 44 Security Rules](https://agentskillshub.top/how-we-grade/)** · **[🤖 Official AI Info](https://agentskillshub.top/ai-info/)** · **[🏢 Enterprise](https://agentskillshub.top/enterprise/)**
 
-Search, audit, and install open-source AI agent skills & MCP servers from your terminal. Every result is **security-graded against 44 published rules** and **quality-scored** by [Agent Skills Hub (`agentskillshub.top`)](https://agentskillshub.top) — an open-source directory of **280,000+ indexed AI agent skills & MCP servers** (**140,000+ graded**, refreshed every 8 hours) with a deterministic trust signal before you install.
+Search, audit, and install open-source AI agent skills & MCP servers from your terminal. Every result is **security-graded against 44 published rules** and **quality-scored** by [Agent Skills Hub (`agentskillshub.top`)](https://agentskillshub.top) — an open-source directory of **250,000+ indexed AI agent skills & MCP servers** (refreshed every 8 hours) with a deterministic trust signal before you install.
 
 ```bash
 npx @agentskillshub/cli search "scrape a website" --safe
@@ -47,7 +47,7 @@ The catalog (50,000+ quality skills, stars ≥ 5) is a single static file (~9MB 
 
 ⚪ **UNAUDITED** is not "probably fine" — it means *no one has audited it*. Check the code, the credentials it asks for, and who maintains it before you trust it.
 
-We scanned the whole catalog and wrote up the long-tail risk curve (1 in 32 graded skills flagged unsafe, ~9x higher below 20 stars) in our **[initial 117,854-skill security survey](https://agentskillshub.top/blog/securing-117k-ai-skills/)** — the live catalog has since grown to **280,000+ indexed and 140,000+ graded** against **[44 published rules](https://agentskillshub.top/how-we-grade/)** (Zenodo dataset DOI: `10.5281/zenodo.21292799`).
+We scanned the whole catalog and wrote up the long-tail risk curve (1 in 32 graded skills flagged unsafe, ~9x higher below 20 stars) in our **[initial 117,854-skill security survey](https://agentskillshub.top/blog/securing-117k-ai-skills/)** — the live catalog has since grown to **250,000+ indexed**, graded against **[44 published rules](https://agentskillshub.top/how-we-grade/)** (Zenodo dataset DOI: `10.5281/zenodo.21292799`).
 
 ## Free vs. Pro
 
